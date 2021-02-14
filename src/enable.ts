@@ -1,40 +1,30 @@
 import * as console from 'console';
 import * as fs from 'fs';
 import {getPackageName} from './getPackageName';
-import {packageJsonPath} from './packageJsonPath';
 import {isDirectDevDependency} from './isDirectDevDependency';
 import {spawnSync} from './spawnSync';
 
-export interface EnableGitHooksProps {
+export interface EnableProps {
     packageJson: string,
     hooksDirectory: string,
 }
 
-export const enableGitHooks = async (
+export const enable = async (
     {
         packageJson,
         hooksDirectory,
-    }: EnableGitHooksProps,
+    }: EnableProps,
 ) => {
     const packageName = await getPackageName(packageJson);
+    console.info(`${packageName}.enable: start`);
     if (!isDirectDevDependency(packageName)) {
         console.info([
-            `${packageName}: install is skipped.`,
+            `${packageName}.enable: skipped.`,
             `${packageName} is not installed as a direct dependency.`,
         ].join(' '));
         return;
     }
     await fs.promises.mkdir(hooksDirectory, {recursive: true});
     spawnSync('git', 'config', '--local', 'core.hooksPath', hooksDirectory);
+    console.info(`${packageName}.enable: done`);
 };
-
-if (require.main === module) {
-    enableGitHooks({
-        packageJson: packageJsonPath,
-        hooksDirectory: '.githooks',
-    })
-    .catch((error: unknown) => {
-        console.error(error);
-        process.exit();
-    });
-}

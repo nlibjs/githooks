@@ -16,15 +16,13 @@
         "node": ">=12"
     },
     "main": "./index.js",
-    "bin": {
-        "enable-githooks": "cjs/enable-githooks.js"
-    },
+    "bin": "cjs/cli.js",
     "files": [
         "index.js",
         "index.d.ts"
     ],
     "scripts": {
-        "postinstall": "ts-node src/enable-githooks.ts",
+        "postinstall": "ts-node src/cli.ts enable",
         "build": "tsc",
         "test": "run-s build test:*",
         "test:ava": "ava './lib/**/*.test.js'",
