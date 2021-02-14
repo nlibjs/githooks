@@ -24,6 +24,7 @@
         "postinstall": "node ./cjs/githooks.js enable",
         "disable": "node ./cjs/githooks.js disable",
         "build": "tsc",
+        "lint": "eslint src",
         "test": "run-s build test:*",
         "test:ava": "ava './lib/**/*.test.js'",
         "test:type": "tsc --noEmit",
