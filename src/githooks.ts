@@ -1,7 +1,9 @@
+#!/usr/bin/env node
 import * as console from 'console';
-import {packageJsonPath} from './packageJsonPath';
+import {packageJsonPath} from './directory';
 import {enable} from './enable';
 import {disable} from './disable';
+import {getPackageName} from './getPackageName';
 
 const ActionEnable = 'enable';
 const ActionDisable = 'disable';
@@ -19,15 +21,17 @@ if (require.main === module) {
     };
     switch (action) {
     case ActionEnable:
-        enable({
-            packageJson: packageJsonPath,
+        getPackageName(packageJsonPath)
+        .then(async (packageName) => await enable({
+            packageName,
             hooksDirectory: '.githooks',
-        }).catch(onError);
+        }))
+        .catch(onError);
         break;
     case ActionDisable:
-        disable({
-            packageJson: packageJsonPath,
-        }).catch(onError);
+        getPackageName(packageJsonPath)
+        .then(async (packageName) => await disable({packageName}))
+        .catch(onError);
         break;
     default:
         throw new Error(`UnexpectedAction: ${args.join(' ')}`);

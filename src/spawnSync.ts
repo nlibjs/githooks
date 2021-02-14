@@ -6,9 +6,13 @@ export interface SpawnResult {
     stderr: string,
 }
 
-export const spawnSync = (command: string, ...args: Array<string>): SpawnResult => {
-    console.log(`spawn: ${command} ${args.join(' ')}`);
-    const {error, output} = childProcess.spawnSync(command, args);
+export const spawnSync = (
+    command: string,
+    args: Array<string>,
+    options?: childProcess.SpawnSyncOptions,
+): SpawnResult => {
+    console.info(`spawn: ${command} ${args.join(' ')}`);
+    const {error, output} = childProcess.spawnSync(command, args, options);
     if (error) {
         throw error;
     }

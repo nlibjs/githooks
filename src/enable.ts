@@ -1,30 +1,31 @@
-import * as console from 'console';
 import * as fs from 'fs';
-import {getPackageName} from './getPackageName';
-import {isDirectDevDependency} from './isDirectDevDependency';
+import * as path from 'path';
+import * as console from 'console';
+import {isDirectDependency} from './isDirectDependency';
 import {spawnSync} from './spawnSync';
 
 export interface EnableProps {
-    packageJson: string,
+    packageName: string,
     hooksDirectory: string,
 }
 
 export const enable = async (
     {
-        packageJson,
+        packageName,
         hooksDirectory,
     }: EnableProps,
 ) => {
-    const packageName = await getPackageName(packageJson);
     console.info(`${packageName}.enable: start`);
-    if (!isDirectDevDependency(packageName)) {
+    if (!isDirectDependency(packageName)) {
         console.info([
             `${packageName}.enable: skipped.`,
             `${packageName} is not installed as a direct dependency.`,
         ].join(' '));
         return;
     }
-    await fs.promises.mkdir(hooksDirectory, {recursive: true});
-    spawnSync('git', 'config', '--local', 'core.hooksPath', hooksDirectory);
+    const {stdout: projectRoot} = spawnSync('git', ['rev-parse', '--show-toplevel']);
+    console.info(`${packageName}.enable: mkdir -p ${projectRoot}`);
+    await fs.promises.mkdir(path.join(projectRoot, hooksDirectory), {recursive: true});
+    spawnSync('git', ['config', '--local', 'core.hooksPath', hooksDirectory]);
     console.info(`${packageName}.enable: done`);
 };
