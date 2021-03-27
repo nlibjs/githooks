@@ -66,7 +66,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm run lint
-      - run: npx c8 npm run test:tsc
+      - run: npx c8 npm run test:type
       - run: npx c8 npm run test:ava
       - run: npx c8 report --reporter=text-lcov > coverage.lcov
       - uses: codecov/codecov-action@v1
