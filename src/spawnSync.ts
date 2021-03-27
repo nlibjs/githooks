@@ -26,3 +26,19 @@ export const spawnSync = (
     }
     return {stdout, stderr};
 };
+
+interface Command {
+    npm: string,
+    npx: string,
+    git: string,
+}
+
+export const command: Command = process.platform.startsWith('win') ? {
+    git: 'git',
+    npm: 'npm.cmd',
+    npx: 'npx.cmd',
+} : {
+    git: 'git',
+    npm: 'npm',
+    npx: 'npx',
+};

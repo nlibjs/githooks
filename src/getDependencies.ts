@@ -1,11 +1,11 @@
 import type {PackageJson} from './loadPackageJson';
 import {parsePackageJsonString} from './loadPackageJson';
-import {spawnSync} from './spawnSync';
+import {command, spawnSync} from './spawnSync';
 
 let cached: PackageJson | undefined;
 export const getDependencies = (): PackageJson => {
     if (!cached) {
-        const {stdout} = spawnSync('npm', ['ls', '--depth=0', '--json']);
+        const {stdout} = spawnSync(command.git, ['ls', '--depth=0', '--json']);
         cached = parsePackageJsonString(`${stdout}`.trim());
     }
     return cached;
