@@ -4,7 +4,8 @@ import * as os from 'os';
 import ava from 'ava';
 import {projectRoot} from './directory';
 import {spawnSync, command} from './spawnSync';
-import {statOrNull} from './statOrNull';
+
+const isObject = (input: unknown): input is Record<string, unknown> => typeof input === 'object' && input !== null;
 
 ava('enable/disable', async (t) => {
     const cwd = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'githooks-enable-'));
@@ -15,7 +16,12 @@ ava('enable/disable', async (t) => {
         private: true,
     }, null, 4));
     const gitHooksDirectory = path.join(cwd, '.githooks');
-    const beforeStats = await statOrNull(gitHooksDirectory);
+    const beforeStats = await fs.promises.stat(gitHooksDirectory).catch((error: unknown) => {
+        if (isObject(error) && error.code === 'ENOENT') {
+            return null;
+        }
+        throw error;
+    });
     t.is(beforeStats, null);
     const originalPackedFile = path.join(projectRoot, packOutput);
     const packedFile = path.join(cwd, packOutput);
