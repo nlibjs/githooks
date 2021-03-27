@@ -26,8 +26,8 @@
         "build": "tsc",
         "lint": "eslint src",
         "test": "run-s build test:*",
-        "test:ava": "ava --config ava.config.test.js",
         "test:type": "tsc --noEmit",
+        "test:ava": "ava --config ava.config.test.js",
         "version": "run-s version:changelog version:add",
         "version:changelog": "nlib-changelog --output CHANGELOG.md",
         "version:add": "git add ."

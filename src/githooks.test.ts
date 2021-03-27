@@ -9,7 +9,6 @@ import {statOrNull} from './statOrNull';
 ava('enable/disable', async (t) => {
     const cwd = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'githooks-enable-'));
     spawnSync('git', ['init'], {cwd});
-    spawnSync('npm', ['run', 'build'], {cwd: projectRoot});
     const {stdout: packOutput} = spawnSync('npm', ['pack'], {cwd: projectRoot});
     await fs.promises.writeFile(path.join(cwd, 'package.json'), JSON.stringify({
         name: '@nlib/githooks-test',
