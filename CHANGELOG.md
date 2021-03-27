@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.5 (2021-03-27)
+
+### Continuous Integration
+
+- remove sourcemap (0843737)
+
+
 ## v0.0.4 (2021-03-27)
 
 ### Bug Fixes
