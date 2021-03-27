@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.2 (2021-03-27)
+
+### Features
+
+- add preuninstall script (aaff038)
+
+
 ## v0.0.1 (2021-03-27)
 
 ### Features
