@@ -22,7 +22,6 @@
     ],
     "scripts": {
         "postinstall": "githooks enable",
-        "disable": "node ./cjs/githooks.js disable",
         "build": "tsc",
         "lint": "eslint src",
         "test": "run-s build test:*",
