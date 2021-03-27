@@ -19,7 +19,9 @@ ava('enable/disable', async (t) => {
     t.is(beforeStats, null);
     const originalPackedFile = path.join(projectRoot, packOutput);
     const packedFile = path.join(cwd, packOutput);
-    await fs.promises.rename(originalPackedFile, packedFile);
+    /** fs.rename causes EXDEV error if os.tmpdir returned a path on another device (Windows). */
+    await fs.promises.copyFile(originalPackedFile, packedFile);
+    await fs.promises.unlink(originalPackedFile);
     spawnSync(command.npm, ['install', '--save-dev', packedFile], {cwd});
     const afterStats = await fs.promises.stat(gitHooksDirectory);
     t.true(afterStats.isDirectory());
