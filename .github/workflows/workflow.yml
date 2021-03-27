@@ -104,7 +104,7 @@ jobs:
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
       - run: npm ci
-      - run: npx remove-sourcemap --directory lib
+      - run: npx remove-sourcemap --directory cjs
       - run: npx cleanup-package-json --file package.json
       - run: npm publish
         env:
