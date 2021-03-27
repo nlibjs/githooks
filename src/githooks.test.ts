@@ -5,11 +5,12 @@ import ava from 'ava';
 import {projectRoot} from './directory';
 import {spawnSync} from './spawnSync';
 import {statOrNull} from './statOrNull';
+const npmCommand = process.platform.startsWith('win') ? 'npm.cmd' : 'npm';
 
 ava('enable/disable', async (t) => {
     const cwd = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'githooks-enable-'));
     spawnSync('git', ['init'], {cwd});
-    const {stdout: packOutput} = spawnSync('npm', ['pack'], {cwd: projectRoot});
+    const {stdout: packOutput} = spawnSync(npmCommand, ['pack'], {cwd: projectRoot});
     await fs.promises.writeFile(path.join(cwd, 'package.json'), JSON.stringify({
         name: '@nlib/githooks-test',
         private: true,
