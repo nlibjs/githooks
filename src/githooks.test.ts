@@ -5,12 +5,12 @@ import ava from 'ava';
 import {projectRoot} from './directory';
 import {spawnSync} from './spawnSync';
 import {statOrNull} from './statOrNull';
-const npmCommand = process.platform.startsWith('win') ? 'npm.cmd' : 'npm';
+const command = process.platform.startsWith('win') ? {npm: 'npm.cmd', npx: 'npx.cmd'} : {npm: 'npm', npx: 'npx'};
 
 ava('enable/disable', async (t) => {
     const cwd = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'githooks-enable-'));
     spawnSync('git', ['init'], {cwd});
-    const {stdout: packOutput} = spawnSync(npmCommand, ['pack'], {cwd: projectRoot});
+    const {stdout: packOutput} = spawnSync(command.npm, ['pack'], {cwd: projectRoot});
     await fs.promises.writeFile(path.join(cwd, 'package.json'), JSON.stringify({
         name: '@nlib/githooks-test',
         private: true,
@@ -21,12 +21,12 @@ ava('enable/disable', async (t) => {
     const originalPackedFile = path.join(projectRoot, packOutput);
     const packedFile = path.join(cwd, packOutput);
     await fs.promises.rename(originalPackedFile, packedFile);
-    spawnSync('npm', ['install', '--save-dev', packedFile], {cwd});
+    spawnSync(command.npm, ['install', '--save-dev', packedFile], {cwd});
     const afterStats = await fs.promises.stat(gitHooksDirectory);
     t.true(afterStats.isDirectory());
     const {stdout: stdout1} = spawnSync('git', ['config', '--local', '--get', 'core.hooksPath'], {cwd});
     t.is(stdout1, '.githooks');
-    spawnSync('npx', ['githooks', 'disable'], {cwd});
+    spawnSync(command.npx, ['githooks', 'disable'], {cwd});
     const {stdout: stdout2} = spawnSync('git', ['config', '--local', '--get', 'core.hooksPath'], {cwd});
     t.is(stdout2, '');
 });
