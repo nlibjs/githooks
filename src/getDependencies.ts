@@ -1,5 +1,5 @@
-import type {PackageJson} from './loadPackageJson';
-import {parsePackageJsonString} from './loadPackageJson';
+import type {PackageJson} from './parsePackageJsonString';
+import {parsePackageJsonString} from './parsePackageJsonString';
 import {command, spawnSync} from './spawnSync';
 
 let cached: PackageJson | undefined;
