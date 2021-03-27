@@ -69,6 +69,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
+      - run: npm ci
       - run: npm run lint
       - run: npx c8 npm run test:type
       - run: npx c8 npm run test:ava
@@ -102,6 +103,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
+      - run: npm ci
       - run: npx remove-sourcemap --directory lib
       - run: npx cleanup-package-json --file package.json
       - run: npm publish
