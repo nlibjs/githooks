@@ -21,7 +21,7 @@
         "cjs"
     ],
     "scripts": {
-        "postinstall": "node ./cjs/githooks.js enable",
+        "postinstall": "githooks enable",
         "disable": "node ./cjs/githooks.js disable",
         "build": "tsc",
         "lint": "eslint src",
