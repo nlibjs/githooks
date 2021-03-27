@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npm install --no-save c8
       - uses: actions/cache@v2
         with:
