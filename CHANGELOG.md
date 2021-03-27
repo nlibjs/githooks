@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.4 (2021-03-27)
+
+### Bug Fixes
+
+- upgrade nodetool to keep scripts field (d8d390f)
+
+
 ## v0.0.3 (2021-03-27)
 
 ### Bug Fixes
