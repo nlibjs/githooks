@@ -1,14 +1,13 @@
 #!/usr/bin/env node
+import * as fs from 'fs';
 import * as console from 'console';
-import {packageJsonPath} from './directory';
 import {enable} from './enable';
 import {disable} from './disable';
-import {getPackageName} from './getPackageName';
-
-const ActionEnable = 'enable';
-const ActionDisable = 'disable';
+import {packageJsonPath} from './directory';
 
 if (require.main === module) {
+    const ActionEnable = 'enable';
+    const ActionDisable = 'disable';
     const args = process.argv.slice(2);
     const [action] = args;
     const availableAction = new Set([ActionEnable, ActionDisable]);
@@ -19,19 +18,13 @@ if (require.main === module) {
         console.error(error);
         process.exit();
     };
+    const {name: packageName} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {name: string};
     switch (action) {
     case ActionEnable:
-        getPackageName(packageJsonPath)
-        .then(async (packageName) => await enable({
-            packageName,
-            hooksDirectory: '.githooks',
-        }))
-        .catch(onError);
+        enable({packageName, hooksDirectory: '.githooks'}).catch(onError);
         break;
     case ActionDisable:
-        getPackageName(packageJsonPath)
-        .then(async (packageName) => await disable({packageName}))
-        .catch(onError);
+        disable({packageName}).catch(onError);
         break;
     default:
         throw new Error(`UnexpectedAction: ${args.join(' ')}`);

@@ -5,10 +5,7 @@ import {isDirectDependency} from './isDirectDependency';
 import {packageJsonPath} from './directory';
 import {getDirectDependencies} from './getDirectDependencies';
 
-const listPackages = function* (
-    modulesDirectory: string,
-    scope?: string,
-): Generator<string> {
+const listPackages = function* (modulesDirectory: string, scope?: string): Generator<string> {
     for (const fileName of fs.readdirSync(modulesDirectory)) {
         const directory = path.join(modulesDirectory, fileName);
         const stats = fs.statSync(directory);

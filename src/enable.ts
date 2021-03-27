@@ -9,12 +9,7 @@ export interface EnableProps {
     hooksDirectory: string,
 }
 
-export const enable = async (
-    {
-        packageName,
-        hooksDirectory,
-    }: EnableProps,
-) => {
+export const enable = async ({packageName, hooksDirectory}: EnableProps) => {
     console.info(`${packageName}.enable: start`);
     if (!isDirectDependency(packageName)) {
         console.info([
