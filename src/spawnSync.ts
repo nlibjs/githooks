@@ -9,15 +9,15 @@ export interface SpawnResult {
 export const spawnSync = (
     command: string,
     args: Array<string>,
-    options?: childProcess.SpawnSyncOptions,
+    {silent, ...options}: childProcess.SpawnSyncOptions & {silent?: true} = {},
 ): SpawnResult => {
-    console.info(`spawn: ${command} ${args.join(' ')}`);
+    console.info(`spawn: ${command} ${args.join(' ')}${silent ? ' (silent)' : ''}`);
     const {error, output} = childProcess.spawnSync(command, args, options);
     if (error) {
         throw error;
     }
     const stdout = `${output[1]}`.trim();
-    if (stdout) {
+    if (stdout && !silent) {
         console.info(stdout);
     }
     const stderr = `${output[2]}`.trim();
