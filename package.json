@@ -27,9 +27,9 @@
         "build:tsc": "tsc --project tsconfig.build.json",
         "build:enable": "node cjs/githooks.js enable",
         "lint": "eslint src",
-        "test": "run-s build test:*",
+        "test": "run-s test:*",
         "test:type": "tsc --noEmit",
-        "test:ava": "ava --config ava.config.test.js",
+        "test:ava": "ava",
         "version": "run-s version:changelog version:add",
         "version:changelog": "nlib-changelog --output CHANGELOG.md",
         "version:add": "git add ."
