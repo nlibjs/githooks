@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import ava from 'ava';
-import {packageJsonPath, projectRoot} from './directory';
 import {spawnSync, command} from './spawnSync';
 
+const projectRoot = path.join(__dirname, '..');
 const isObject = (input: unknown): input is Record<string, unknown> => typeof input === 'object' && input !== null;
 
 ava('enable/disable', async (t) => {
@@ -33,6 +33,7 @@ ava('enable/disable', async (t) => {
     t.true(afterStats.isDirectory());
     const {stdout: stdout1} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});
     t.is(stdout1, '.githooks');
+    const packageJsonPath = path.join(__dirname, '../package.json');
     const {name: packageName} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {name: string};
     spawnSync(command.npm, ['uninstall', packageName], {cwd});
     const {stdout: stdout2} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});

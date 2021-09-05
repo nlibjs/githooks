@@ -1,9 +1,8 @@
+import ava from 'ava';
 import * as fs from 'fs';
 import * as path from 'path';
-import {testFunction} from '@nlib/test';
-import {isDirectDependency} from './isDirectDependency';
-import {packageJsonPath} from './directory';
 import {getDirectDependencies} from './getDirectDependencies';
+import {isDirectDependency} from './isDirectDependency';
 
 const listPackages = function* (modulesDirectory: string, scope?: string): Generator<string> {
     for (const fileName of fs.readdirSync(modulesDirectory)) {
@@ -31,7 +30,10 @@ const listPackages = function* (modulesDirectory: string, scope?: string): Gener
 };
 
 const primaries = getDirectDependencies();
-const nodeModules = path.join(path.dirname(packageJsonPath), 'node_modules');
+const nodeModules = path.join(__dirname, '../node_modules');
 for (const input of listPackages(nodeModules)) {
-    testFunction(isDirectDependency, {input, expected: primaries.has(input)});
+    const expected = primaries.has(input);
+    ava(`isDirectDependency('${input}') → ${expected}`, (t) => {
+        t.is(isDirectDependency(input), expected);
+    });
 }
