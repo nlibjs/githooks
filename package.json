@@ -18,6 +18,7 @@
     "main": "./cjs/index.cjs",
     "bin": "./index.cjs",
     "files": [
+        "index.cjs",
         "cjs"
     ],
     "scripts": {
