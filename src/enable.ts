@@ -5,11 +5,11 @@ import {isDirectDependency} from './isDirectDependency';
 import {command, spawnSync} from './spawnSync';
 
 export interface EnableProps {
-    packageName: string,
     hooksDirectory: string,
 }
 
-export const enable = async ({packageName, hooksDirectory}: EnableProps) => {
+export const enable = async ({hooksDirectory}: EnableProps) => {
+    const packageName = '@nlib/githooks';
     console.info(`${packageName}.enable: start`);
     if (!isDirectDependency(packageName)) {
         console.info([

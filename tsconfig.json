@@ -11,10 +11,12 @@
         "resolveJsonModule": true,
         "removeComments": true,
         "declaration": true,
-        "sourceMap": false,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true
-    }
+    },
+    "exclude": [
+        "./cjs/**/*"
+    ]
 }
