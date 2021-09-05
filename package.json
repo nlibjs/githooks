@@ -31,13 +31,11 @@
         "test:type": "tsc --noEmit",
         "test:ava": "ava",
         "version": "run-s version:changelog version:add",
-        "version:changelog": "nlib-changelog --output CHANGELOG.md",
+        "version:changelog": "npx @nlib/changelog --output CHANGELOG.md",
         "version:add": "git add ."
     },
     "devDependencies": {
-        "@nlib/changelog": "0.1.9",
         "@nlib/eslint-config": "3.17.24",
-        "@nlib/lint-commit": "0.1.4",
         "@nlib/nodetool": "0.1.17",
         "@nlib/test": "3.18.7",
         "@types/node": "15.14.9",
