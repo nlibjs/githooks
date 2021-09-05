@@ -33,9 +33,9 @@ ava('enable/disable', async (t) => {
     t.true(afterStats.isDirectory());
     const {stdout: stdout1} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});
     t.is(stdout1, '.githooks');
-    const packageJsonPath = path.join(__dirname, '../package.json');
-    const {name: packageName} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {name: string};
-    spawnSync(command.npm, ['uninstall', packageName], {cwd});
-    const {stdout: stdout2} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});
-    t.is(stdout2, '');
+    // const packageJsonPath = path.join(__dirname, '../package.json');
+    // const {name: packageName} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {name: string};
+    // spawnSync(command.npm, ['uninstall', packageName], {cwd});
+    // const {stdout: stdout2} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});
+    // t.is(stdout2, '');
 });
