@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as console from 'console';
-import { isDirectDependency } from './isDirectDependency';
-import { command, spawnSync } from './spawnSync';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as console from 'node:console';
+import { isDirectDependency } from './isDirectDependency.mjs';
+import { command, spawnSync } from './spawnSync.mjs';
 
 export interface EnableProps {
   hooksDirectory: string;

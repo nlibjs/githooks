@@ -1,10 +1,10 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
 import ava from 'ava';
-import { spawnSync, command } from './spawnSync';
+import { spawnSync, command } from './spawnSync.mjs';
 
-const projectRoot = path.join(__dirname, '..');
+const projectRoot = new URL('../', import.meta.url);
 const isObject = (input: unknown): input is Record<string, unknown> =>
   typeof input === 'object' && input !== null;
 
@@ -37,7 +37,7 @@ ava('enable/disable', async (t) => {
       throw error;
     });
   t.is(beforeStats, null);
-  const originalPackedFile = path.join(projectRoot, packOutput);
+  const originalPackedFile = new URL(packOutput, projectRoot);
   const packedFile = path.join(cwd, packOutput);
   /** fs.rename causes EXDEV error if os.tmpdir returned a path on another device (Windows). */
   await fs.promises.copyFile(originalPackedFile, packedFile);
@@ -51,9 +51,4 @@ ava('enable/disable', async (t) => {
     { cwd },
   );
   t.is(stdout1, '.githooks');
-  // const packageJsonPath = path.join(__dirname, '../package.json');
-  // const {name: packageName} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {name: string};
-  // spawnSync(command.npm, ['uninstall', packageName], {cwd});
-  // const {stdout: stdout2} = spawnSync(command.git, ['config', '--local', '--get', 'core.hooksPath'], {cwd});
-  // t.is(stdout2, '');
 });

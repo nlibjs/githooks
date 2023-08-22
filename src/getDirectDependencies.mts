@@ -1,4 +1,4 @@
-import { command, spawnSync } from './spawnSync';
+import { command, spawnSync } from './spawnSync.mjs';
 
 interface NpmLsOutput {
   name?: string;
