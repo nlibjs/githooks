@@ -1,5 +1,5 @@
-import * as console from 'console';
-import * as childProcess from 'child_process';
+import * as console from 'node:console';
+import * as childProcess from 'node:child_process';
 
 export interface SpawnResult {
   stdout: string;
@@ -39,13 +39,5 @@ interface Command {
 }
 
 export const command: Command = process.platform.startsWith('win')
-  ? {
-      git: 'git',
-      npm: 'npm.cmd',
-      npx: 'npx.cmd',
-    }
-  : {
-      git: 'git',
-      npm: 'npm',
-      npx: 'npx',
-    };
+  ? { git: 'git', npm: 'npm.cmd', npx: 'npx.cmd' }
+  : { git: 'git', npm: 'npm', npx: 'npx' };

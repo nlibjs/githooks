@@ -15,21 +15,18 @@
   "engines": {
     "node": ">=16"
   },
-  "main": "./cjs/index.cjs",
-  "bin": "./index.cjs",
+  "main": "./esm/cli.mjs",
+  "bin": "./esm/cli.mjs",
   "files": [
-    "index.cjs",
-    "cjs"
+    "esm",
+    "!**/*.test.*"
   ],
   "scripts": {
-    "postinstall": "node index.cjs enable",
-    "build": "run-s build:*",
-    "build:tsc": "tsc --project tsconfig.build.json",
-    "build:enable": "node cjs/githooks.js enable",
+    "postinstall": "node esm/cli.mjs enable",
+    "build": "tsc",
     "lint": "eslint src",
-    "test": "run-s test:*",
-    "test:type": "tsc --noEmit",
-    "test:ava": "ava src",
+    "test": "run-s build test:*",
+    "test:unit": "ava",
     "postversion": "run-s postversion:*",
     "postversion:changelog": "nlib-changelog --output CHANGELOG.md",
     "postversion:add": "git add .",
@@ -61,14 +58,8 @@
     }
   },
   "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
     "files": [
-      "src/**/*.test.*(m|c)+(j|t)s*(x)"
+      "esm/**/*.test.*(m|c)+(j|t)s*(x)"
     ]
   },
   "lint-staged": {

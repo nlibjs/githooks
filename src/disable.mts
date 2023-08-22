@@ -1,5 +1,5 @@
-import * as console from 'console';
-import { command, spawnSync } from './spawnSync';
+import * as console from 'node:console';
+import { command, spawnSync } from './spawnSync.mjs';
 
 export const disable = async () => {
   const packageName = '@nlib/githooks';
