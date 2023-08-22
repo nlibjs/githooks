@@ -37,8 +37,8 @@
     "devDependencies": {
         "@nlib/eslint-config": "3.17.28",
         "@types/node": "20.5.1",
-        "@typescript-eslint/eslint-plugin": "4.33.0",
-        "@typescript-eslint/parser": "4.33.0",
+        "@typescript-eslint/eslint-plugin": "6.4.1",
+        "@typescript-eslint/parser": "6.4.1",
         "ava": "5.3.1",
         "eslint": "8.47.0",
         "lint-staged": "14.0.1",
