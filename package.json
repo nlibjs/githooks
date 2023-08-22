@@ -13,7 +13,7 @@
   "homepage": "https://github.com/nlibjs/githooks",
   "repository": "https://github.com/nlibjs/githooks",
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "main": "./cjs/index.cjs",
   "bin": "./index.cjs",
@@ -29,7 +29,7 @@
     "lint": "eslint src",
     "test": "run-s test:*",
     "test:type": "tsc --noEmit",
-    "test:ava": "ava",
+    "test:ava": "ava src",
     "postversion": "run-s postversion:*",
     "postversion:changelog": "nlib-changelog --output CHANGELOG.md",
     "postversion:add": "git add .",
@@ -68,7 +68,7 @@
       "ts-node/register"
     ],
     "files": [
-      "lib/**/*.test.*(m|c)+(j|t)s*(x)"
+      "src/**/*.test.*(m|c)+(j|t)s*(x)"
     ]
   },
   "lint-staged": {
