@@ -1,5 +1,5 @@
-import * as console from 'node:console';
 import * as childProcess from 'node:child_process';
+import * as console from 'node:console';
 
 export interface SpawnResult {
   stdout: string;

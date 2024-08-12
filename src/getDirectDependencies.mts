@@ -10,7 +10,7 @@ const listDirectDependencies = function* (): Generator<string> {
     silent: true,
   });
   const { name = '', dependencies = {} } = JSON.parse(
-    `${stdout}`.trim(),
+    stdout.trim(),
   ) as NpmLsOutput;
   if (name) {
     yield name;
