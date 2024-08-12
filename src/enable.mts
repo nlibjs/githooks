@@ -1,6 +1,6 @@
+import * as console from 'node:console';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as console from 'node:console';
 import { isDirectDependency } from './isDirectDependency.mjs';
 import { command, spawnSync } from './spawnSync.mjs';
 
