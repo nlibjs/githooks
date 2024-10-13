@@ -1,7 +1,10 @@
+import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
-import ava from "ava";
-import { getDirectDependencies } from "./getDirectDependencies.mjs";
-import { isDirectDependency } from "./isDirectDependency.mjs";
+import { test } from "node:test";
+import {
+	getDirectDependencies,
+	isDirectDependency,
+} from "./isDirectDependency.mjs";
 
 const listPackages = function* (
 	modulesDirectory: URL,
@@ -35,7 +38,7 @@ const primaries = getDirectDependencies();
 const nodeModules = new URL("../node_modules/", import.meta.url);
 for (const input of listPackages(nodeModules)) {
 	const expected = primaries.has(input);
-	ava(`isDirectDependency('${input}') → ${expected}`, (t) => {
-		t.is(isDirectDependency(input), expected);
+	test(`isDirectDependency('${input}') → ${expected}`, () => {
+		assert.equal(isDirectDependency(input), expected);
 	});
 }
