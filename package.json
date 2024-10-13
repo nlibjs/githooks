@@ -24,7 +24,8 @@
 		"build": "tsc",
 		"lint": "biome lint",
 		"test": "run-s build test:*",
-		"test:deps": "node --test \"esm/*.test.mjs\"",
+		"test:deps": "node --test esm/isDirectDependency.test.mjs",
+		"test:cli": "node --test esm/cli.test.mjs",
 		"version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
 	},
 	"devDependencies": {
