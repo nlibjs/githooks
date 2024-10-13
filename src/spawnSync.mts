@@ -1,43 +1,27 @@
-import * as console from 'node:console';
-import * as childProcess from 'node:child_process';
+import * as childProcess from "node:child_process";
+import * as console from "node:console";
 
-export interface SpawnResult {
-  stdout: string;
-  stderr: string;
+interface SpawnResult {
+	stdout: string;
+	stderr: string;
 }
 
 export const spawnSync = (
-  command: string,
-  args: Array<string>,
-  {
-    silent,
-    ...options
-  }: childProcess.SpawnSyncOptions & { silent?: true } = {},
+	command: string,
+	options: childProcess.SpawnSyncOptions = {},
 ): SpawnResult => {
-  console.info(
-    `spawn: ${command} ${args.join(' ')}${silent ? ' (silent)' : ''}`,
-  );
-  const { error, output } = childProcess.spawnSync(command, args, options);
-  if (error) {
-    throw error;
-  }
-  const stdout = `${output[1]}`.trim();
-  if (stdout && !silent) {
-    console.info(stdout);
-  }
-  const stderr = `${output[2]}`.trim();
-  if (stderr) {
-    console.error(stderr);
-  }
-  return { stdout, stderr };
+	console.info(`spawn: ${command}`);
+	const { error, output } = childProcess.spawnSync(command, {
+		shell: true,
+		...options,
+	});
+	if (error) {
+		throw error;
+	}
+	const stdout = `${output[1]}`.trim();
+	const stderr = `${output[2]}`.trim();
+	if (stderr) {
+		console.error(stderr);
+	}
+	return { stdout, stderr };
 };
-
-interface Command {
-  npm: string;
-  npx: string;
-  git: string;
-}
-
-export const command: Command = process.platform.startsWith('win')
-  ? { git: 'git', npm: 'npm.cmd', npx: 'npx.cmd' }
-  : { git: 'git', npm: 'npm', npx: 'npx' };

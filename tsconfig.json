@@ -1,20 +1,17 @@
 {
-  "ts-node": {
-    "transpileOnly": true
-  },
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "removeComments": true,
-    "declaration": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "esm"
-  }
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"strict": true,
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"removeComments": true,
+		"declaration": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"outDir": "esm"
+	}
 }
