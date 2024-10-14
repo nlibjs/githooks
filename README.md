@@ -7,17 +7,38 @@ A command to enable/disable git hooks scripts in `repository/.githooks`.
 
 ## Usage
 
-Install `@nlib/githooks` with the `--save-dev` flag.
+Install `@nlib/githooks` with `--save-dev` flag.
 
 ```
 npm install --save-dev @nlib/githooks
 ```
 
-That's all. If `@nlib/githooks` is installed as the direct devDependency (listed in the package.json), it configures git hooks automatically.
+That's all. If `@nlib/githooks` is installed as the direct devDependency
+(listed in the package.json), it configures git hooks automatically.
 
-Then, your scripts in `repository/.githooks` are now recognized by git.
+Then, your scripts in `.githooks` are now recognized by git.
 
 *Note: Don't forget to run `chmod +x .githooks/your-script`.*
+
+## How it works
+
+This package sets the `core.hooksPath` configuration to `.githooks`:
+
+```sh
+git config --local core.hooksPath .githooks
+```
+
+> Q. Why do I need this package?
+> Can't I just add `git config --local core.hooksPath .githooks` to the
+> `postinstall` script in `package.json`?
+
+A. You could do that. However, if you're the author of a package, the
+`postinstall` script would also run for anyone who installs your package.
+This means your `git hooks` configuration would be applied to their repository
+as well, which may not be what you want.
+By using this package as a devDependency, you ensure that the configuration is
+applied only in your own project and not propagated to others who install your
+package.
 
 ## Uninstalling
 
