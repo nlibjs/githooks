@@ -5,7 +5,7 @@ import { run } from "./run.mjs";
 import { statOrNull } from "./statOrNull.mjs";
 
 export const disable = async () => {
-	const dirs = getDirectories();
+	const dirs = await getDirectories();
 	await run("git config --local --unset core.hooksPath", dirs.projectRoot);
 	await run(`npm uninstall ${packageName}`, dirs.projectRoot);
 	const stats = await statOrNull(dirs.hooks);

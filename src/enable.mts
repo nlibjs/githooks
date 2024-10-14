@@ -5,8 +5,8 @@ import { isDirectDependency } from "./isDirectDependency.mjs";
 import { run } from "./run.mjs";
 
 export const enable = async () => {
-	if (isDirectDependency(packageName)) {
-		const dirs = getDirectories();
+	if (await isDirectDependency(packageName)) {
+		const dirs = await getDirectories();
 		await fs.mkdir(dirs.hooks, { recursive: true });
 		console.info(`${packageName}: created ${dirs.hooks}`);
 		const command = `git config --local core.hooksPath ${dirnameForHooks}`;
