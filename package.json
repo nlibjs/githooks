@@ -3,7 +3,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"license": "Apache-2.0",
 	"author": {
 		"name": "Kei Ito",
@@ -20,7 +20,10 @@
 	"bin": {
 		"githooks-cli": "esm/cli.mjs"
 	},
-	"files": ["esm", "!**/*.test.*"],
+	"files": [
+		"esm",
+		"!**/*.test.*"
+	],
 	"scripts": {
 		"postinstall": "node esm/cli.mjs enable",
 		"build": "tsc",
@@ -38,6 +41,8 @@
 		"typescript": "5.6.3"
 	},
 	"renovate": {
-		"extends": ["github>nlibjs/renovate-config"]
+		"extends": [
+			"github>nlibjs/renovate-config"
+		]
 	}
 }
