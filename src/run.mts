@@ -21,7 +21,7 @@ const printer =
 export const run = async (
 	command: string,
 	cwd: Exclude<SpawnOptions["cwd"], undefined>,
-	ignoreStatus = false,
+	skipStatusCheck = false,
 ): Promise<RunResult> =>
 	await new Promise<RunResult>((resolve, reject) => {
 		console.info(`${packageName}: ${command}`);
@@ -34,7 +34,7 @@ export const run = async (
 		child.once("exit", (status) => {
 			const stdout = Buffer.concat(stdoutBuffer).toString().trim();
 			const stderr = Buffer.concat(stderrBuffer).toString().trim();
-			if (status === 0 || ignoreStatus) {
+			if (status === 0 || skipStatusCheck) {
 				resolve({ status, stdout, stderr });
 			} else {
 				reject(new Error(`exit status is ${status}`));
