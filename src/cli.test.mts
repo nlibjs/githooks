@@ -5,8 +5,8 @@ import * as path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { dirnameForHooks } from "./config.mjs";
+import { ignoreENOENT } from "./ignoreENOENT.mjs";
 import { run } from "./run.mjs";
-import { statOrNull } from "./statOrNull.mjs";
 
 test("enable → disable", async (t) => {
 	const testDir = await fs.mkdtemp(path.join(os.tmpdir(), "githooks-"));
@@ -28,7 +28,7 @@ test("enable → disable", async (t) => {
 	let tgzFileUrl: URL | undefined;
 	t.after(async () => {
 		if (tgzFileUrl) {
-			await fs.unlink(tgzFileUrl);
+			await fs.unlink(tgzFileUrl).catch(ignoreENOENT);
 		}
 	});
 	{
@@ -54,7 +54,9 @@ test("enable → disable", async (t) => {
 	}
 	{
 		t.diagnostic(`files: ${(await fs.readdir(testDir)).join(", ")}`);
-		const stats = await statOrNull(path.join(testDir, dirnameForHooks));
+		const stats = await fs
+			.stat(path.join(testDir, dirnameForHooks))
+			.catch(ignoreENOENT);
 		assert.equal(stats?.isDirectory(), true);
 	}
 	{
