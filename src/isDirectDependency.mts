@@ -1,30 +1,24 @@
-import { spawnSync } from "./spawnSync.mjs";
+import { execSync } from "node:child_process";
+import { getDirectories } from "./getDirectories.mjs";
+import { isObjectLike } from "./isObjectLike.mjs";
+import { memoize } from "./memoize.mjs";
 
-interface NpmLsOutput {
-	name?: string;
-	dependencies?: Record<string, unknown>;
-}
-
-const listDirectDependencies = function* (): Generator<string> {
-	const { stdout } = spawnSync("npm ls --depth=0 --json");
-	const { name = "", dependencies = {} } = JSON.parse(
-		`${stdout}`.trim(),
-	) as NpmLsOutput;
-	if (name) {
-		yield name;
+const getDirectDependencies = memoize(() => {
+	const dirs = getDirectories();
+	const parseResult = JSON.parse(
+		`${execSync("npm ls --depth=0 --json", { cwd: dirs.projectRoot })}`,
+	);
+	if (isObjectLike(parseResult) && isObjectLike(parseResult.dependencies)) {
+		return new Set(Object.keys(parseResult.dependencies));
 	}
-	for (const key of Object.keys(dependencies)) {
-		yield key;
-	}
-};
+	throw new Error("Failed to get dependencies.");
+});
 
-let cached: Set<string> | undefined;
-export const getDirectDependencies = (): Set<string> => {
-	if (!cached) {
-		cached = new Set(listDirectDependencies());
-	}
-	return cached;
-};
-
+/**
+ * Check if a package is a direct dependency of the current project.
+ * A direct dependency is a package that is listed in the package.json file.
+ * This function gets the list of direct dependencies by executing
+ * `npm ls --depth=0 --json`.
+ */
 export const isDirectDependency = (packageName: string): boolean =>
 	getDirectDependencies().has(packageName);

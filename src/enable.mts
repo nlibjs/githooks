@@ -1,29 +1,15 @@
-import * as console from "node:console";
 import * as fs from "node:fs/promises";
-import * as path from "node:path";
+import { dirnameForHooks, packageName } from "./config.mjs";
+import { getDirectories } from "./getDirectories.mjs";
 import { isDirectDependency } from "./isDirectDependency.mjs";
-import { spawnSync } from "./spawnSync.mjs";
+import { run } from "./run.mjs";
 
-const getPackageName = async () => {
-	const jsonUrl = new URL("../package.json", import.meta.url);
-	const json = await fs.readFile(jsonUrl, "utf8");
-	const { name } = JSON.parse(json);
-	if (typeof name !== "string") {
-		throw new TypeError("Cannot read package name from package.json");
+export const enable = async () => {
+	if (isDirectDependency(packageName)) {
+		const dirs = getDirectories();
+		await fs.mkdir(dirs.hooks, { recursive: true });
+		console.info(`${packageName}: created ${dirs.hooks}`);
+		const command = `git config --local core.hooksPath ${dirnameForHooks}`;
+		await run(command, dirs.projectRoot);
 	}
-	return name;
-};
-
-export const enable = async ({
-	hooksDirectory,
-}: { hooksDirectory: string }) => {
-	const packageName = await getPackageName();
-	if (!isDirectDependency(packageName)) {
-		return;
-	}
-	const { stdout: projectRoot } = spawnSync("git rev-parse --show-toplevel");
-	console.info(`${packageName}.enable: mkdir -p ${projectRoot}`);
-	await fs.mkdir(path.join(projectRoot, hooksDirectory), { recursive: true });
-	spawnSync(`git config --local core.hooksPath ${hooksDirectory}`);
-	console.info(`${packageName}.enable: done`);
 };

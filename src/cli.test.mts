@@ -3,36 +3,73 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { test } from "node:test";
-import { spawnSync } from "./spawnSync.mjs";
+import { fileURLToPath } from "node:url";
+import { dirnameForHooks } from "./config.mjs";
+import { run } from "./run.mjs";
+import { statOrNull } from "./statOrNull.mjs";
 
-const projectRoot = new URL("../", import.meta.url);
-
-test("enable/disable", async () => {
-	const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "githooks-"));
-	spawnSync("git init", { cwd });
-	const { stdout: packOutput } = spawnSync("npm pack", { cwd: projectRoot });
-	await fs.writeFile(
-		path.join(cwd, "package.json"),
-		JSON.stringify({ name: "@nlib/githooks-test", private: true }, null, 4),
-	);
-	const gitHooksDirectory = path.join(cwd, ".githooks");
-	await assert.rejects(
-		async () => {
-			await fs.stat(gitHooksDirectory);
-		},
-		{ code: "ENOENT" },
-	);
-	const originalPackedFile = new URL(packOutput, projectRoot);
-	const packedFile = path.join(cwd, packOutput);
-	/** fs.rename causes EXDEV error if os.tmpdir returned a path on another device (Windows). */
-	await fs.copyFile(originalPackedFile, packedFile);
-	await fs.unlink(originalPackedFile);
-	spawnSync(`npm install --save-dev ${packedFile}`, { cwd });
-	const afterStats = await fs.stat(gitHooksDirectory);
-	assert.equal(afterStats.isDirectory(), true);
+test("enable → disable", async (t) => {
+	const testDir = await fs.mkdtemp(path.join(os.tmpdir(), "githooks-"));
+	t.diagnostic(`testDir: ${testDir}`);
+	{
+		await run("git init", testDir);
+		t.diagnostic("done: git init");
+		const command = "git config --local --get core.hooksPath";
+		const result = await run(command, testDir, true);
+		t.diagnostic(`core.hooksPath: ${result.stdout}`);
+		assert.equal(result.stdout, "");
+	}
+	{
+		const dest = path.join(testDir, "package.json");
+		const data = { name: "@nlib/githooks-test", private: true };
+		await fs.writeFile(dest, JSON.stringify(data, null, 4));
+		t.diagnostic("created: package.json");
+	}
+	let tgzFileUrl: URL | undefined;
+	t.after(async () => {
+		if (tgzFileUrl) {
+			await fs.unlink(tgzFileUrl);
+		}
+	});
+	{
+		const cwd = new URL("../", import.meta.url);
+		const tgzFileName = (await run("npm pack", cwd)).stdout;
+		t.diagnostic(`done: npm pack { tgzFileName: ${tgzFileName} }`);
+		tgzFileUrl = new URL(tgzFileName, cwd);
+	}
+	{
+		const command = [
+			"npm install --save-dev",
+			fileURLToPath(tgzFileUrl),
+			"--foreground-scripts",
+		].join(" ");
+		await run(command, testDir);
+		t.diagnostic("done: npm install");
+	}
 	{
 		const command = "git config --local --get core.hooksPath";
-		const { stdout } = spawnSync(command, { cwd });
-		assert.equal(stdout, ".githooks");
+		const result = await run(command, testDir);
+		t.diagnostic(`core.hooksPath: ${result.stdout}`);
+		assert.equal(result.stdout, dirnameForHooks);
+	}
+	{
+		t.diagnostic(`files: ${(await fs.readdir(testDir)).join(", ")}`);
+		const stats = await statOrNull(path.join(testDir, dirnameForHooks));
+		assert.equal(stats?.isDirectory(), true);
+	}
+	{
+		const command = "npx githooks-cli disable";
+		await run(command, testDir);
+		t.diagnostic("done: disable hooks");
+	}
+	{
+		const command = "git config --local --get core.hooksPath";
+		const result = await run(command, testDir, true);
+		t.diagnostic(`core.hooksPath: ${result.stdout}`);
+		assert.equal(result.stdout, "");
+	}
+	{
+		const command = "npx githooks-cli enable";
+		await assert.rejects(async () => await run(command, testDir));
 	}
 });
