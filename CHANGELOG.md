@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.2.2 (2024-10-14)
+
+### Bug Fixes
+
+- workaround for ELSPROBLEMS ([ae8c1fd](https://github.com/nlibjs/githooks/commit/ae8c1fd9b11a140dcb7355b9dba64a12b273aaea))
+
+### Tests
+
+- use tsm-test ([b78b5f6](https://github.com/nlibjs/githooks/commit/b78b5f6d5395d83716800d63e6c55fe0a20e88a6))
+- missing await ([10842d3](https://github.com/nlibjs/githooks/commit/10842d3a5a7bec2cbbb7ef5a5b6f2b0267e87c5b))
+
+### Code Refactoring
+
+- replace statOrNull with ignoreENOENT ([60ab874](https://github.com/nlibjs/githooks/commit/60ab874e234e6b7f0bdee604e0019c846568c2bb))
+
+### Styles
+
+- format ([94d1e1e](https://github.com/nlibjs/githooks/commit/94d1e1ee8be8e1bb8684cd9b959bf74101f11a76))
+
+### Dependency Upgrades
+
+- uninstall @nlib/tsm ([78e9db7](https://github.com/nlibjs/githooks/commit/78e9db7f91849f10487637bb8c00a6d749ae14d1))
+
+
 ## v0.2.1 (2024-10-14)
 
 ### Features
