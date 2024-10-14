@@ -3,36 +3,58 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { test } from "node:test";
-import { spawnSync } from "./spawnSync.mjs";
+import { fileURLToPath } from "node:url";
+import { dirnameForHooks } from "./config.mjs";
+import { spawn } from "./spawn.mjs";
 
-const projectRoot = new URL("../", import.meta.url);
+test("enable → disable", async (t) => {
+	const testDir = await fs.mkdtemp(path.join(os.tmpdir(), "githooks-"));
 
-test("enable/disable", async () => {
-	const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "githooks-"));
-	spawnSync("git init", { cwd });
-	const { stdout: packOutput } = spawnSync("npm pack", { cwd: projectRoot });
-	await fs.writeFile(
-		path.join(cwd, "package.json"),
-		JSON.stringify({ name: "@nlib/githooks-test", private: true }, null, 4),
-	);
-	const gitHooksDirectory = path.join(cwd, ".githooks");
-	await assert.rejects(
-		async () => {
-			await fs.stat(gitHooksDirectory);
-		},
-		{ code: "ENOENT" },
-	);
-	const originalPackedFile = new URL(packOutput, projectRoot);
-	const packedFile = path.join(cwd, packOutput);
-	/** fs.rename causes EXDEV error if os.tmpdir returned a path on another device (Windows). */
-	await fs.copyFile(originalPackedFile, packedFile);
-	await fs.unlink(originalPackedFile);
-	spawnSync(`npm install --save-dev ${packedFile}`, { cwd });
-	const afterStats = await fs.stat(gitHooksDirectory);
-	assert.equal(afterStats.isDirectory(), true);
-	{
+	await t.test("git init", async () => {
+		const cwd = testDir;
+		spawn("git init", { cwd });
+	});
+
+	await t.test("create package.json", async () => {
+		const data = { name: "@nlib/githooks-test", private: true };
+		const dest = path.join(testDir, "package.json");
+		await fs.writeFile(dest, JSON.stringify(data, null, 4));
+	});
+
+	let tgzFileUrl: URL | undefined;
+
+	await t.test("npm pack", async (tt) => {
+		const cwd = new URL("../", import.meta.url);
+		const tgzFileName = spawn("npm pack", { cwd }).stdout;
+		tt.diagnostic(`tgzFileName: ${tgzFileName}`);
+		tgzFileUrl = new URL(tgzFileName, cwd);
+		t.after(async () => {
+			if (tgzFileUrl) {
+				await fs.unlink(tgzFileUrl);
+			}
+		});
+	});
+
+	await t.test("npm install --save-dev", async (tt) => {
+		if (!tgzFileUrl) {
+			throw new TypeError("tgzFileUrl is not defined");
+		}
+		const cwd = testDir;
+		const command = `npm install --save-dev ${fileURLToPath(tgzFileUrl)}`;
+		const result = spawn(command, { cwd });
+		tt.diagnostic(result.stdout.replace(/\s*\n\s*/g, " "));
+	});
+
+	await t.test("check core.hooksPath", async () => {
+		const cwd = testDir;
 		const command = "git config --local --get core.hooksPath";
-		const { stdout } = spawnSync(command, { cwd });
-		assert.equal(stdout, ".githooks");
-	}
+		const result = spawn(command, { cwd });
+		assert.equal(result.stdout, dirnameForHooks);
+	});
+
+	await t.test(`stat ${dirnameForHooks}`, async () => {
+		const hooksDirPath = path.join(testDir, dirnameForHooks);
+		const stats = await fs.stat(hooksDirPath);
+		assert.equal(stats.isDirectory(), true);
+	});
 });

@@ -1,30 +1,32 @@
-import { spawnSync } from "./spawnSync.mjs";
-
-interface NpmLsOutput {
-	name?: string;
-	dependencies?: Record<string, unknown>;
-}
+import { isObjectLike } from "./isObjectLike.mjs";
+import { spawn } from "./spawn.mjs";
 
 const listDirectDependencies = function* (): Generator<string> {
-	const { stdout } = spawnSync("npm ls --depth=0 --json");
-	const { name = "", dependencies = {} } = JSON.parse(
-		`${stdout}`.trim(),
-	) as NpmLsOutput;
-	if (name) {
-		yield name;
-	}
-	for (const key of Object.keys(dependencies)) {
-		yield key;
+	const { stdout } = spawn("npm ls --depth=0 --json");
+	const parseResult = JSON.parse(`${stdout}`.trim());
+	if (isObjectLike(parseResult)) {
+		if (typeof parseResult.name === "string") {
+			yield parseResult.name;
+		}
+		if (isObjectLike(parseResult.dependencies)) {
+			for (const key of Object.keys(parseResult.dependencies)) {
+				yield key;
+			}
+		}
 	}
 };
 
-let cached: Set<string> | undefined;
-export const getDirectDependencies = (): Set<string> => {
-	if (!cached) {
-		cached = new Set(listDirectDependencies());
-	}
-	return cached;
-};
+let directDependencies: Set<string> | undefined;
 
-export const isDirectDependency = (packageName: string): boolean =>
-	getDirectDependencies().has(packageName);
+/**
+ * Check if a package is a direct dependency of the current project.
+ * A direct dependency is a package that is listed in the package.json file.
+ * This function gets the list of direct dependencies by executing
+ * `npm ls --depth=0 --json`.
+ */
+export const isDirectDependency = (packageName: string): boolean => {
+	if (!directDependencies) {
+		directDependencies = new Set(listDirectDependencies());
+	}
+	return directDependencies.has(packageName);
+};
