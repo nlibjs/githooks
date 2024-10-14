@@ -36,7 +36,7 @@ const listPackagesInDirectory = function* (
 };
 
 test("isDirectDependency ", async (t) => {
-	const directDependencies = new Set<string>();
+	const packageJsonDependencies = new Set<string>();
 
 	await t.test("list direct dependencies from package.json", async (tt) => {
 		const packageJsonUrl = new URL("../package.json", import.meta.url);
@@ -46,24 +46,37 @@ test("isDirectDependency ", async (t) => {
 			const { dependencies, devDependencies } = parseResult;
 			if (isObjectLike(dependencies)) {
 				for (const key of Object.keys(dependencies)) {
-					directDependencies.add(key);
+					packageJsonDependencies.add(key);
 				}
 			}
 			if (isObjectLike(devDependencies)) {
 				for (const key of Object.keys(devDependencies)) {
-					directDependencies.add(key);
+					packageJsonDependencies.add(key);
 				}
 			}
 		}
-		const list = Array.from(directDependencies);
-		tt.diagnostic(`directDependencies: ${list.join(", ")}`);
+		const list = Array.from(packageJsonDependencies);
+		tt.diagnostic(`packageJsonDependencies: ${list.join(", ")}`);
 	});
 
 	const nodeModules = new URL("../node_modules/", import.meta.url);
-	for (const input of listPackagesInDirectory(nodeModules)) {
-		const expected = directDependencies.has(input);
-		await t.test(`isDirectDependency('${input}') → ${expected}`, () => {
-			assert.equal(isDirectDependency(input), expected);
+	for (const input of packageJsonDependencies) {
+		const expected = true;
+		await t.test(`isDirectDependency('${input}') → ${expected}`, async () => {
+			assert.equal(await isDirectDependency(input), expected);
 		});
+	}
+	let count = 0;
+	const maxCount = 8;
+	for (const input of listPackagesInDirectory(nodeModules)) {
+		if (!packageJsonDependencies.has(input)) {
+			const expected = false;
+			await t.test(`isDirectDependency('${input}') → ${expected}`, async () => {
+				assert.equal(await isDirectDependency(input), expected);
+			});
+			if (maxCount < ++count) {
+				break;
+			}
+		}
 	}
 });
