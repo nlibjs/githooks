@@ -1,14 +1,15 @@
-import * as fs from "node:fs";
+import * as fs from "node:fs/promises";
 import { dirnameForHooks, packageName } from "./config.mjs";
-import { getHooksDirPath } from "./getHooksDirPath.mjs";
+import { getDirectories } from "./getDirectories.mjs";
 import { isDirectDependency } from "./isDirectDependency.mjs";
-import { spawn } from "./spawn.mjs";
+import { run } from "./run.mjs";
 
-export const enable = () => {
+export const enable = async () => {
 	if (isDirectDependency(packageName)) {
-		const hooksDirPath = getHooksDirPath();
-		fs.mkdirSync(hooksDirPath);
-		spawn(`git config --local core.hooksPath ${dirnameForHooks}`);
-		console.info(`${packageName} enable: done`);
+		const dirs = getDirectories();
+		await fs.mkdir(dirs.hooks, { recursive: true });
+		console.info(`${packageName}: created ${dirs.hooks}`);
+		const command = `git config --local core.hooksPath ${dirnameForHooks}`;
+		await run(command, dirs.projectRoot);
 	}
 };

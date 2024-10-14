@@ -1,22 +1,18 @@
+import { execSync } from "node:child_process";
+import { getDirectories } from "./getDirectories.mjs";
 import { isObjectLike } from "./isObjectLike.mjs";
-import { spawn } from "./spawn.mjs";
+import { memoize } from "./memoize.mjs";
 
-const listDirectDependencies = function* (): Generator<string> {
-	const { stdout } = spawn("npm ls --depth=0 --json");
-	const parseResult = JSON.parse(`${stdout}`.trim());
-	if (isObjectLike(parseResult)) {
-		if (typeof parseResult.name === "string") {
-			yield parseResult.name;
-		}
-		if (isObjectLike(parseResult.dependencies)) {
-			for (const key of Object.keys(parseResult.dependencies)) {
-				yield key;
-			}
-		}
+const getDirectDependencies = memoize(() => {
+	const dirs = getDirectories();
+	const parseResult = JSON.parse(
+		`${execSync("npm ls --depth=0 --json", { cwd: dirs.projectRoot })}`,
+	);
+	if (isObjectLike(parseResult) && isObjectLike(parseResult.dependencies)) {
+		return new Set(Object.keys(parseResult.dependencies));
 	}
-};
-
-let directDependencies: Set<string> | undefined;
+	throw new Error("Failed to get dependencies.");
+});
 
 /**
  * Check if a package is a direct dependency of the current project.
@@ -24,9 +20,5 @@ let directDependencies: Set<string> | undefined;
  * This function gets the list of direct dependencies by executing
  * `npm ls --depth=0 --json`.
  */
-export const isDirectDependency = (packageName: string): boolean => {
-	if (!directDependencies) {
-		directDependencies = new Set(listDirectDependencies());
-	}
-	return directDependencies.has(packageName);
-};
+export const isDirectDependency = (packageName: string): boolean =>
+	getDirectDependencies().has(packageName);

@@ -1,5 +1,5 @@
 import * as assert from "node:assert/strict";
-import * as fs from "node:fs/promises";
+import * as fs from "node:fs";
 import { test } from "node:test";
 import { isDirectDependency } from "./isDirectDependency.mjs";
 import { isObjectLike } from "./isObjectLike.mjs";
@@ -7,14 +7,14 @@ import { isObjectLike } from "./isObjectLike.mjs";
 /**
  * walk through the modulesDirectory and yield the package names.
  */
-const listPackagesInDirectory = async function* (
+const listPackagesInDirectory = function* (
 	modulesDirectory: URL,
 	scope?: string,
-): AsyncGenerator<string> {
+): Generator<string> {
 	modulesDirectory.pathname = modulesDirectory.pathname.replace(/\/*$/, "/");
-	for (const fileName of await fs.readdir(modulesDirectory)) {
+	for (const fileName of fs.readdirSync(modulesDirectory)) {
 		const directory = new URL(fileName, modulesDirectory);
-		const stats = await fs.stat(directory);
+		const stats = fs.statSync(directory);
 		if (stats.isDirectory()) {
 			if (fileName.startsWith("@")) {
 				if (scope) {
@@ -24,7 +24,7 @@ const listPackagesInDirectory = async function* (
 			} else {
 				const modulePackageJsonPath = new URL("package.json", `${directory}/`);
 				try {
-					if ((await fs.stat(modulePackageJsonPath)).isFile()) {
+					if (fs.statSync(modulePackageJsonPath).isFile()) {
 						yield scope ? `${scope}/${fileName}` : fileName;
 					}
 				} catch {
@@ -40,7 +40,7 @@ test("isDirectDependency ", async (t) => {
 
 	await t.test("list direct dependencies from package.json", async (tt) => {
 		const packageJsonUrl = new URL("../package.json", import.meta.url);
-		const json = await fs.readFile(packageJsonUrl, "utf8");
+		const json = fs.readFileSync(packageJsonUrl, "utf8");
 		const parseResult = JSON.parse(json);
 		if (isObjectLike(parseResult)) {
 			const { dependencies, devDependencies } = parseResult;
@@ -60,7 +60,7 @@ test("isDirectDependency ", async (t) => {
 	});
 
 	const nodeModules = new URL("../node_modules/", import.meta.url);
-	for await (const input of listPackagesInDirectory(nodeModules)) {
+	for (const input of listPackagesInDirectory(nodeModules)) {
 		const expected = directDependencies.has(input);
 		await t.test(`isDirectDependency('${input}') → ${expected}`, () => {
 			assert.equal(isDirectDependency(input), expected);

@@ -1,4 +1,2 @@
-export const isObjectLike = (
-	value: unknown,
-): value is Record<string, unknown> =>
-	Boolean(value) && (typeof value === "object" || typeof value === "function");
+export const isObjectLike = (v: unknown): v is Record<string, unknown> =>
+	Boolean(v) && (typeof v === "object" || typeof v === "function");
