@@ -1,50 +1,97 @@
 # @nlib/githooks
 
-A command to enable/disable git hooks scripts in `repository/.githooks`.
+## Retirement notice
 
-[![Test](https://github.com/nlibjs/githooks/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/githooks/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/nlibjs/githooks/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/githooks)
+Feature development and compatibility maintenance have ended.
+The repository will stay open for migration questions during the transition.
+No further releases are planned. New projects should use an explicit Git setup command
+instead of installing this package.
 
-## Usage
+`@nlib/githooks` enabled scripts in `repository/.githooks` by setting Git's
+`core.hooksPath` during its npm `postinstall` script.
 
-Install `@nlib/githooks` with `--save-dev` flag.
+We support the security-driven move away from npm scripts for automatic
+setup. Each developer should explicitly configure Git hooks with a Git command
+in their own checkout. Automatic setup during dependency installation was the
+purpose of this package; without it, the package no longer provides value.
+For that reason, we are retiring it rather than adding install-script approvals
+or another npm lifecycle integration.
 
+The existing package versions remain available. This retirement does not
+disable hooks in repositories that already configured them.
+
+## Migrate without changing your hooks
+
+Run these commands from the root of the Git repository that uses this package:
+
+```sh
+npm uninstall --ignore-scripts @nlib/githooks
+git config --local core.hooksPath .githooks
+git config --local --get core.hooksPath
 ```
-npm install --save-dev @nlib/githooks
-```
 
-That's all. If `@nlib/githooks` is installed as the direct devDependency
-(listed in the package.json), it configures git hooks automatically.
+The final command should print `.githooks`. Keep the `.githooks` directory and
+its scripts, and commit the dependency removal in `package.json` and
+`package-lock.json`. Remove any `githooks-cli` calls from project scripts or
+setup instructions. If you approved this package's install scripts, remove its
+entry from the consuming project's `allowScripts` configuration as well.
 
-Then, your scripts in `.githooks` are now recognized by git.
+`--ignore-scripts` skips lifecycle scripts during dependency removal.
+Do not use `githooks-cli disable` for this migration: it also unsets
+`core.hooksPath`.
 
-*Note: Don't forget to run `chmod +x .githooks/your-script`.*
-
-## How it works
-
-This package sets the `core.hooksPath` configuration to `.githooks`:
+Git configuration is local to each checkout. Add the following explicit step
+to your contributor setup instructions and run it after each new clone:
 
 ```sh
 git config --local core.hooksPath .githooks
 ```
 
-> Q. Why do I need this package?
-> Can't I just add `git config --local core.hooksPath .githooks` to the
-> `postinstall` script in `package.json`?
+Each developer should run this Git command directly. Do not add it to npm
+lifecycle scripts.
 
-A. You could do that. However, if you're the author of a package, the
-`postinstall` script would also run for anyone who installs your package.
-This means your `git hooks` configuration would be applied to their repository
-as well, which may not be what you want.
-By using this package as a devDependency, you ensure that the configuration is
-applied only in your own project and not propagated to others who install your
-package.
+On systems that require it, make your hook scripts executable and commit the
+executable bit, for example:
 
-## Uninstalling
+```sh
+chmod +x .githooks/pre-commit
+```
 
-`<0.1.x` reverts the installation on uninstalling of this package. But [uninstall lifecycle scripts were removed](https://docs.npmjs.com/cli/v7/using-npm/scripts#a-note-on-a-lack-of-npm-uninstall-scripts) in npm@7, `>0.1.x` do nothing on uninstalling of this package.
+This setup selects `.githooks` instead of other hook directories. If you use
+another hook manager, follow that manager's setup instructions instead.
 
-If you want to revert the configuration, please follow the steps below.
+## Stop using these hooks entirely
 
-1. Run `git config --local --unset core.hooksPath`
-2. Delete the `.githooks`
+First inspect the current local setting:
+
+```sh
+git config --local --get core.hooksPath
+```
+
+If it is `.githooks` and you want to stop using it, remove the package and unset
+the setting:
+
+```sh
+npm uninstall --ignore-scripts @nlib/githooks
+git config --local --unset core.hooksPath
+```
+
+Do not unset a setting belonging to another hook manager. Unsetting the local
+value restores Git's normal configuration resolution, which may use a global
+hook path or `.git/hooks`; it does not necessarily disable all Git hooks.
+Delete `.githooks` only if you no longer need its scripts.
+
+## Retirement process
+
+See [RETIREMENT.md](RETIREMENT.md) for the staged retirement checklist.
+Published versions and Git history will remain available after archival.
+
+## References
+
+- [Git hook documentation](https://git-scm.com/docs/githooks)
+- [npm install-script approvals](https://docs.npmjs.com/cli/v12/commands/npm-install-scripts/)
+- [npm lifecycle scripts and the removal of uninstall scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/)
+
+## License
+
+Apache-2.0. See [LICENSE.txt](LICENSE.txt).
