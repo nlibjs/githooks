@@ -23,10 +23,6 @@ Existing published versions and Git history will remain available.
 For Git hook configuration, refer to the
 [official Git documentation](https://git-scm.com/docs/githooks).
 
-## Retirement process
-
-See [RETIREMENT.md](RETIREMENT.md) for the staged retirement checklist.
-
 ## License
 
 Apache-2.0. See [LICENSE.txt](LICENSE.txt).
