@@ -58,7 +58,14 @@ unindexed repositories may exist; do not claim that every user has migrated.
 
 | Known consumer | Migration change | Verified | Remaining work |
 | --- | --- | --- | --- |
-| Inventory pending | — | — | Identify known consumers |
+| [nlibjs/lint-commit](https://github.com/nlibjs/lint-commit) | Pending | Direct devDependency 0.2.2 confirmed | Remove dependency, update setup docs, verify hooks |
+| [nlibjs/indexen](https://github.com/nlibjs/indexen) | Pending | Direct devDependency 0.2.2 confirmed | Remove dependency, update setup docs, verify hooks |
+| [nlibjs/cleanup-package-json](https://github.com/nlibjs/cleanup-package-json) | Pending | Direct devDependency 0.2.2 confirmed | Remove dependency, update setup docs, verify hooks |
+| [nlibjs/esmify](https://github.com/nlibjs/esmify) | Pending | Direct devDependency 0.2.2 confirmed | Remove dependency, update setup docs, verify hooks |
+
+Initial inventory checked on 2026-10-11 (Asia/Tokyo). These four repositories
+were found by organization code search and confirmed against their current
+package.json files; the list is not exhaustive.
 
 ## Phase 4: Archive after the transition
 
