@@ -13,9 +13,9 @@ Retirement does not change Git settings in existing consumer checkouts.
 
 ## Phase 1: Publish the migration notice
 
-- Merge the retirement notice and migration instructions.
+- Merge the retirement notice and link to the official Git hook documentation.
 - Disable Renovate and remove the automated npm publication workflow.
-- Keep the repository open for migration questions.
+- Keep the repository open for retirement-related questions.
 - Record the notice publication date below.
 
 Notice publication date: pending merge.
@@ -28,7 +28,7 @@ After the migration notice is public, a maintainer with npm package access
 should mark all published versions deprecated:
 
 ```sh
-npm deprecate '@nlib/githooks@*' 'Maintenance has ended. Keep your .githooks scripts and configure them explicitly with git config --local core.hooksPath .githooks. Migration: https://github.com/nlibjs/githooks#retirement-notice'
+npm deprecate '@nlib/githooks@*' 'This package is no longer maintained. For Git hook configuration, see https://git-scm.com/docs/githooks. Retirement notice: https://github.com/nlibjs/githooks#retirement-notice'
 ```
 
 This changes registry metadata; it does not require a new release or execute
@@ -45,13 +45,14 @@ Deprecation date: pending.
 - Remove the dependency with lifecycle scripts disabled, update the lockfile,
   and remove obsolete `allowScripts` entries if present.
 - Retain existing hook scripts and their executable bits.
-- Add the explicit Git command to contributor setup instructions. Each
-  developer must run it in their own checkout; a dependency-removal commit
-  cannot configure other developers' local Git settings.
+- Link to the official Git hook documentation in contributor documentation.
+  Do not reproduce Git setup commands or maintain a separate configuration guide.
+  Each developer is responsible for configuring their own checkout.
 - Verify the selected hook path and run the repository's normal hook checks.
   Exercise Git hook invocation in a disposable checkout where practical.
 - For repositories using another hook manager, preserve that manager's setup.
-- Answer migration questions and correct documentation during the transition.
+- Handle retirement-related questions during the transition. Refer Git
+  configuration questions to the official documentation.
 
 Public code search is not a complete consumer inventory. Private users and
 unindexed repositories may exist; do not claim that every user has migrated.
@@ -71,7 +72,7 @@ package.json files; the list is not exhaustive.
 
 Allow at least 30 days after publishing the notice before reviewing archival.
 Archive only after known consumer migrations are complete and outstanding
-migration questions have been handled. Extend the transition if needed.
+retirement-related questions have been handled. Extend the transition if needed.
 
 Before archival:
 
@@ -81,7 +82,8 @@ Before archival:
 - Review publishing credentials. Remove a repository-specific `NPM_TOKEN`
   secret and revoke its token only after confirming it is not shared by other
   packages or repositories.
-- Confirm README, migration instructions, license, and Git history are present.
+- Confirm README, the official Git documentation link, license, and Git history
+  are present.
 - Record the archival date and archive the repository.
 
 Archival date: pending readiness review.
