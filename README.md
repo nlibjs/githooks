@@ -12,6 +12,10 @@ and believe each developer should configure Git hooks explicitly using Git.
 Without automatic setup, this package no longer provides value, so we are
 retiring it.
 
+For background on npm's install-time script policy, see the
+[official announcement of npm 12's install-time security defaults](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/)
+and the [npm install-script approval documentation](https://docs.npmjs.com/cli/v12/commands/npm-install-scripts/).
+
 Existing published versions and Git history will remain available.
 
 ## Git hooks
