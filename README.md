@@ -1,50 +1,27 @@
 # @nlib/githooks
 
-A command to enable/disable git hooks scripts in `repository/.githooks`.
+## Retirement notice
 
-[![Test](https://github.com/nlibjs/githooks/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/githooks/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/nlibjs/githooks/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/githooks)
+Feature development and compatibility maintenance have ended.
+No further releases are planned.
 
-## Usage
+This package automatically configured Git hooks through npm's `postinstall`
+script. I support avoiding npm scripts for automatic setup on security grounds
+and believe each developer should configure Git hooks explicitly using Git.
+Without automatic setup, this package no longer provides value, so I am
+retiring it.
 
-Install `@nlib/githooks` with `--save-dev` flag.
+For background on npm's install-time script policy, see the
+[official announcement of npm 12's install-time security defaults](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/)
+and the [npm install-script approval documentation](https://docs.npmjs.com/cli/v12/commands/npm-install-scripts/).
 
-```
-npm install --save-dev @nlib/githooks
-```
+Existing published versions and Git history will remain available.
 
-That's all. If `@nlib/githooks` is installed as the direct devDependency
-(listed in the package.json), it configures git hooks automatically.
+## Git hooks
 
-Then, your scripts in `.githooks` are now recognized by git.
+For Git hook configuration, refer to the
+[official Git documentation](https://git-scm.com/docs/githooks).
 
-*Note: Don't forget to run `chmod +x .githooks/your-script`.*
+## License
 
-## How it works
-
-This package sets the `core.hooksPath` configuration to `.githooks`:
-
-```sh
-git config --local core.hooksPath .githooks
-```
-
-> Q. Why do I need this package?
-> Can't I just add `git config --local core.hooksPath .githooks` to the
-> `postinstall` script in `package.json`?
-
-A. You could do that. However, if you're the author of a package, the
-`postinstall` script would also run for anyone who installs your package.
-This means your `git hooks` configuration would be applied to their repository
-as well, which may not be what you want.
-By using this package as a devDependency, you ensure that the configuration is
-applied only in your own project and not propagated to others who install your
-package.
-
-## Uninstalling
-
-`<0.1.x` reverts the installation on uninstalling of this package. But [uninstall lifecycle scripts were removed](https://docs.npmjs.com/cli/v7/using-npm/scripts#a-note-on-a-lack-of-npm-uninstall-scripts) in npm@7, `>0.1.x` do nothing on uninstalling of this package.
-
-If you want to revert the configuration, please follow the steps below.
-
-1. Run `git config --local --unset core.hooksPath`
-2. Delete the `.githooks`
+Apache-2.0. See [LICENSE.txt](LICENSE.txt).
